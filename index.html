@@ -373,22 +373,30 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
+<!--
+  firebase-config.js je ODVOJENA datoteka (napraviš je jednom, s pravim
+  vrijednostima) koja se NE prepisuje kad ti pošaljem novu verziju index.html.
+  Ako je nema (još je nisi napravio), stranica normalno radi lokalno.
+  Upute: upute-firebase-hosting.md
+-->
+<script src="firebase-config.js"></script>
+
 <script>
 (function(){
   "use strict";
 
   /* ========================================================================
-     POPUNI OVO da uključiš sinkronizaciju preko interneta.
-     Dok je apiKey na "PASTE_API_KEY", stranica radi lokalno (bez oblaka).
-     Upute: upute-firebase-hosting.md
+     Konfiguracija se čita iz firebase-config.js (odvojena datoteka, vidi gore).
+     Ako ta datoteka ne postoji ili nije popunjena, koristi se prazan predložak
+     ispod i stranica radi lokalno (bez oblaka) — ništa se ne "kvari".
   ======================================================================== */
-  var firebaseConfig = {
+  var firebaseConfig = window.firebaseConfig || {
     apiKey: "AIzaSyCyZ6xlz19KwZb51-c8sQ6jN_og7M-omd4",
-    authDomain: "selidba.firebaseapp.com",
-    projectId: "selidba",
-    storageBucket: "selidba.firebasestorage.app",
-    messagingSenderId: "747128197349",
-    appId: "1:747128197349:web:ca169143d0aad532d9040c"
+      authDomain: "selidba.firebaseapp.com",
+      projectId: "selidba",
+      storageBucket: "selidba.firebasestorage.app",
+      messagingSenderId: "747128197349",
+      appId: "1:747128197349:web:ca169143d0aad532d9040c"
   };
   var FIRESTORE_COLLECTION = "selidba";
   var FIRESTORE_DOC = "plan";
