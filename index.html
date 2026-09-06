@@ -1,0 +1,994 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plan Selidbe</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --paper:#EEEEE2;
+    --surface:#FBFBF4;
+    --surface-2:#F2F1E6;
+    --ink:#212B2E;
+    --ink-muted:#5C666A;
+    --line: rgba(33,43,46,0.14);
+    --line-strong: rgba(33,43,46,0.28);
+    --accent-kuca:#B8752E;
+    --accent-kuca-soft: rgba(184,117,46,0.13);
+    --accent-stan:#1E6E67;
+    --accent-stan-soft: rgba(30,110,103,0.13);
+    --accent-urgent:#B14432;
+    --accent-urgent-soft: rgba(177,68,50,0.13);
+    --tape:#E4D9A8;
+    --shadow: 0 1px 2px rgba(33,43,46,0.06), 0 6px 20px rgba(33,43,46,0.07);
+    --radius: 3px;
+    --radius-lg: 6px;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#171D1F;
+      --surface:#1E2628;
+      --surface-2:#232C2E;
+      --ink:#ECE8DC;
+      --ink-muted:#9AA3A0;
+      --line: rgba(236,232,220,0.14);
+      --line-strong: rgba(236,232,220,0.26);
+      --accent-kuca:#E0954A;
+      --accent-kuca-soft: rgba(224,149,74,0.16);
+      --accent-stan:#4FBBAE;
+      --accent-stan-soft: rgba(79,187,174,0.16);
+      --accent-urgent:#E07A65;
+      --accent-urgent-soft: rgba(224,122,101,0.16);
+      --tape:#3A3320;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 20px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#171D1F;
+    --surface:#1E2628;
+    --surface-2:#232C2E;
+    --ink:#ECE8DC;
+    --ink-muted:#9AA3A0;
+    --line: rgba(236,232,220,0.14);
+    --line-strong: rgba(236,232,220,0.26);
+    --accent-kuca:#E0954A;
+    --accent-kuca-soft: rgba(224,149,74,0.16);
+    --accent-stan:#4FBBAE;
+    --accent-stan-soft: rgba(79,187,174,0.16);
+    --accent-urgent:#E07A65;
+    --accent-urgent-soft: rgba(224,122,101,0.16);
+    --tape:#3A3320;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 20px rgba(0,0,0,0.35);
+  }
+
+  *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+  }
+
+  body{
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Sans 3', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    margin:0;
+  }
+
+  .wrap{ max-width: 920px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  h1,h2,h3{ font-family:'Oswald', system-ui, sans-serif; text-transform:uppercase; letter-spacing:0.03em; text-wrap:balance; margin:0; }
+
+  .mono{ font-family:'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+  /* ---------- masthead ---------- */
+  .masthead{
+    position:relative;
+    border:1px solid var(--line-strong);
+    border-radius: var(--radius-lg);
+    background:
+      linear-gradient(var(--surface), var(--surface)) padding-box,
+      repeating-linear-gradient(0deg, transparent, transparent 23px, var(--line) 23px, var(--line) 24px) padding-box,
+      repeating-linear-gradient(90deg, transparent, transparent 23px, var(--line) 23px, var(--line) 24px) padding-box;
+    padding: 22px 22px 0;
+    overflow:hidden;
+    box-shadow: var(--shadow);
+  }
+  .masthead-top{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .stamp{
+    display:inline-flex; align-items:center; gap:10px;
+    font-size: clamp(1.6rem, 4vw, 2.3rem); font-weight:700;
+    border:3px solid var(--ink); border-radius: var(--radius);
+    padding: 6px 16px; transform: rotate(-0.6deg);
+    background: var(--surface);
+  }
+  .stamp .box{ font-size:1.4rem; }
+  .masthead-sub{ color:var(--ink-muted); font-size:0.95rem; max-width:56ch; margin-top:14px; }
+
+  .sync-status{
+    font-family:'IBM Plex Mono'; font-size:0.72rem; letter-spacing:0.02em;
+    display:inline-flex; align-items:center; gap:7px; color:var(--ink-muted);
+    padding:6px 12px; border:1px solid var(--line-strong); border-radius:20px; white-space:nowrap;
+  }
+  .sync-status::before{ content:""; width:7px; height:7px; border-radius:50%; background:var(--ink-muted); flex:none; }
+  .sync-status.ok{ color: var(--accent-stan); border-color: var(--accent-stan); }
+  .sync-status.ok::before{ background: var(--accent-stan); }
+  .sync-status.err{ color: var(--accent-urgent); border-color: var(--accent-urgent); }
+  .sync-status.err::before{ background: var(--accent-urgent); }
+
+  .titleblock{
+    margin-top:20px;
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top:1px solid var(--line-strong);
+  }
+  .titleblock > div{
+    border-right:1px solid var(--line-strong);
+    border-bottom:1px solid var(--line-strong);
+    padding:10px 14px;
+  }
+  .titleblock > div:last-child{ border-right:none; }
+  .tb-label{ font-family:'Oswald'; font-size:0.68rem; letter-spacing:0.09em; text-transform:uppercase; color:var(--ink-muted); }
+  .tb-value{ font-family:'IBM Plex Mono'; font-size:0.95rem; margin-top:3px; }
+  .tb-value input[type="date"]{
+    font-family:'IBM Plex Mono'; font-size:0.95rem; color:var(--ink); background:transparent;
+    border:none; border-bottom:1px dashed var(--line-strong); padding:2px 0; width:100%;
+  }
+  @media (max-width: 640px){ .titleblock{ grid-template-columns: repeat(2, 1fr); } }
+
+  /* ---------- overall progress ---------- */
+  .overall{
+    display:flex; align-items:center; gap:14px;
+    margin-top:18px; padding:14px 16px;
+    background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-lg);
+  }
+  .overall-track{ flex:1; height:10px; border-radius:6px; background:var(--line); overflow:hidden; }
+  .overall-fill{ height:100%; background: linear-gradient(90deg, var(--accent-kuca), var(--accent-stan)); border-radius:6px; transition:width .25s ease; width:0%; }
+  .overall-num{ font-family:'IBM Plex Mono'; font-weight:600; min-width:3.4em; text-align:right; }
+
+  /* ---------- tabs ---------- */
+  .tabs{
+    display:flex; gap:2px; margin-top:26px; overflow-x:auto;
+    border-bottom:1px solid var(--line-strong);
+  }
+  .tab{
+    font-family:'Oswald'; text-transform:uppercase; letter-spacing:0.05em; font-size:0.85rem;
+    background:none; border:none; color:var(--ink-muted); cursor:pointer;
+    padding:10px 16px; white-space:nowrap; position:relative; top:1px;
+    border-bottom:2px solid transparent;
+  }
+  .tab:hover{ color:var(--ink); }
+  .tab:focus-visible{ outline:2px solid var(--ink); outline-offset:2px; }
+  .tab[aria-selected="true"]{ color:var(--ink); border-bottom-color:var(--ink); font-weight:600; }
+  .tab .dot{ display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:7px; vertical-align:middle; }
+
+  .panel{ padding-top:22px; }
+  .panel[hidden]{ display:none; }
+
+  .lead{ color:var(--ink-muted); max-width: 64ch; margin: 0 0 20px; }
+
+  /* ---------- section (group) ---------- */
+  .group{ margin-bottom:26px; }
+  .group-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
+  .group-title{ font-size:1rem; letter-spacing:0.04em; }
+  .group-progress{ display:flex; align-items:center; gap:8px; }
+  .bar{ width:90px; height:6px; border-radius:4px; background:var(--line); overflow:hidden; }
+  .bar > span{ display:block; height:100%; border-radius:4px; transition:width .2s ease; }
+  .bar-num{ font-family:'IBM Plex Mono'; font-size:0.78rem; color:var(--ink-muted); min-width:2.6em; }
+
+  .checklist{ display:flex; flex-direction:column; border:1px solid var(--line); border-radius:var(--radius-lg); overflow:hidden; background:var(--surface); }
+  .item{
+    display:flex; align-items:flex-start; gap:11px;
+    padding:10px 14px; border-top:1px solid var(--line);
+    border-left:3px solid transparent;
+  }
+  .item:first-child{ border-top:none; }
+  .item.checked{ background: var(--surface-2); }
+  .item.checked .item-text{ color:var(--ink-muted); text-decoration:line-through; text-decoration-color:var(--line-strong); }
+  .item input[type="checkbox"]{
+    appearance:none; -webkit-appearance:none; width:18px; height:18px; margin-top:2px; flex:none;
+    border:2px solid var(--line-strong); border-radius:3px; cursor:pointer; position:relative; background:var(--surface);
+  }
+  .item input[type="checkbox"]:checked{ background:var(--ink); border-color:var(--ink); }
+  .item input[type="checkbox"]:checked::after{
+    content:""; position:absolute; left:4px; top:0px; width:5px; height:9px;
+    border:solid var(--paper); border-width:0 2px 2px 0; transform:rotate(40deg);
+  }
+  .item input[type="checkbox"]:focus-visible{ outline:2px solid var(--ink); outline-offset:2px; }
+  .item-text{ font-size:0.96rem; cursor:pointer; }
+  .item-note{ display:block; font-size:0.8rem; color:var(--ink-muted); margin-top:2px; }
+
+  .g-kuca .item{ border-left-color: var(--accent-kuca); }
+  .g-stan .item{ border-left-color: var(--accent-stan); }
+  .g-kuca .bar > span{ background: var(--accent-kuca); }
+  .g-stan .bar > span{ background: var(--accent-stan); }
+  .g-neutral .bar > span{ background: var(--ink-muted); }
+  .g-urgent .item{ border-left-color: var(--accent-urgent); }
+  .g-urgent .bar > span{ background: var(--accent-urgent); }
+
+  /* ---------- note / tape callout ---------- */
+  .note{
+    position:relative; margin: 6px 0 22px; padding:14px 16px 14px 18px;
+    background: var(--surface-2); border:1px solid var(--line); border-radius:2px;
+    font-size:0.9rem; color:var(--ink-muted); max-width:68ch;
+  }
+  .note::before{
+    content:""; position:absolute; top:-9px; left:22px; width:56px; height:18px;
+    background: var(--tape); opacity:0.85; transform:rotate(-3deg);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  }
+  .note strong{ color:var(--ink); }
+
+  /* ---------- timeline (overview) ---------- */
+  .timeline{ display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:12px; margin-top:6px; }
+  .tcard{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg); padding:14px; }
+  .tcard-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+  .tcard-week{ font-family:'Oswald'; letter-spacing:0.05em; font-size:0.85rem; }
+  .tcard-dates{ font-family:'IBM Plex Mono'; font-size:0.74rem; color:var(--ink-muted); }
+  .tcard ul{ margin:0; padding-left:0; list-style:none; display:flex; flex-direction:column; gap:6px; }
+  .tcard li{ font-size:0.85rem; padding-left:14px; position:relative; }
+  .tcard li::before{ content:"–"; position:absolute; left:0; color:var(--ink-muted); }
+  .tcard li.k::before{ content:"K"; color:var(--accent-kuca); font-weight:700; font-size:0.72rem; }
+  .tcard li.s::before{ content:"S"; color:var(--accent-stan); font-weight:700; font-size:0.72rem; }
+  .tcard li.a::before{ content:"A"; color:var(--ink-muted); font-weight:700; font-size:0.72rem; }
+
+  .legend{ display:flex; gap:16px; flex-wrap:wrap; margin:14px 0 4px; font-size:0.8rem; color:var(--ink-muted); }
+  .legend span{ display:inline-flex; align-items:center; gap:6px; }
+  .legend i{ width:10px; height:10px; border-radius:2px; display:inline-block; }
+
+  /* ---------- budget table ---------- */
+  .budget-group{ margin-bottom:22px; }
+  .budget-table{ width:100%; border-collapse:collapse; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg); overflow:hidden; }
+  .budget-table th{ text-align:left; font-family:'Oswald'; font-size:0.72rem; letter-spacing:0.07em; text-transform:uppercase; color:var(--ink-muted); padding:9px 12px; border-bottom:1px solid var(--line-strong); }
+  .budget-table td{ padding:8px 12px; border-top:1px solid var(--line); font-size:0.92rem; vertical-align:middle; }
+  .budget-table tr td:first-child{ display:flex; align-items:center; gap:9px; }
+  .budget-table input[type="number"]{
+    width:88px; font-family:'IBM Plex Mono'; font-size:0.9rem; text-align:right;
+    background:var(--surface-2); border:1px solid var(--line); border-radius:4px; color:var(--ink); padding:5px 8px;
+  }
+  .budget-table .eur{ color:var(--ink-muted); margin-left:4px; }
+  .budget-table tfoot td{ font-family:'IBM Plex Mono'; font-weight:600; border-top:2px solid var(--line-strong); }
+  .overflow-x{ overflow-x:auto; }
+
+  .total-strip{ display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding:14px 16px; background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-lg); }
+  .total-strip .amount{ font-family:'IBM Plex Mono'; font-size:1.3rem; font-weight:600; }
+
+  /* ---------- reset ---------- */
+  .foot-row{ display:flex; justify-content:flex-end; margin-top:30px; }
+  .reset-btn{
+    font-family:'Source Sans 3'; font-size:0.82rem; color:var(--ink-muted);
+    background:none; border:1px solid var(--line-strong); border-radius:4px; padding:7px 12px; cursor:pointer;
+  }
+  .reset-btn:hover{ color:var(--ink); border-color:var(--ink); }
+  .reset-btn.confirming{ color:var(--accent-urgent); border-color:var(--accent-urgent); }
+
+  a{ color: var(--accent-stan); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="stamp"><span class="box">📦</span> PLAN SELIDBE</div>
+      <div class="sync-status" id="syncStatus">Pokretanje…</div>
+    </div>
+    <p class="masthead-sub">Iz stana u kuću: useljenje u kuću (manji radovi) i priprema stana za izdavanje u najam (manje uređenje), radovi uglavnom samostalno — u roku od mjesec dana.</p>
+
+    <div class="titleblock">
+      <div>
+        <div class="tb-label">Cilj useljenja</div>
+        <div class="tb-value"><input type="date" id="targetDate" /></div>
+      </div>
+      <div>
+        <div class="tb-label">Kuća — stanje</div>
+        <div class="tb-value">Useljiva odmah</div>
+      </div>
+      <div>
+        <div class="tb-label">Stan — cilj</div>
+        <div class="tb-value">Manje uređenje</div>
+      </div>
+      <div>
+        <div class="tb-label">Izvođenje</div>
+        <div class="tb-value">Najviše sami</div>
+      </div>
+    </div>
+
+    <div class="overall" style="margin:18px 0 -1px; border:none; border-top:1px solid var(--line-strong); border-radius:0; background:transparent;">
+      <div class="tb-label" style="white-space:nowrap;">Ukupni napredak</div>
+      <div class="overall-track"><div class="overall-fill" id="overallFill"></div></div>
+      <div class="overall-num mono" id="overallNum">0%</div>
+    </div>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="Sekcije plana">
+    <button class="tab" role="tab" aria-selected="true" data-panel="pregled">Pregled</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="kuca"><span class="dot" style="background:var(--accent-kuca)"></span>Kuća</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="stan"><span class="dot" style="background:var(--accent-stan)"></span>Stan</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="admin">Administracija</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="selidba"><span class="dot" style="background:var(--accent-urgent)"></span>Dan D</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="budzet">Proračun</button>
+  </div>
+
+  <!-- ============ PREGLED ============ -->
+  <section class="panel" id="panel-pregled" role="tabpanel">
+    <p class="lead">Mjesec je podijeljen na četiri tjedna. Kuća i stan idu paralelno — kuća uglavnom traži provjere i sitne popravke, stan malo više rada jer ide na tržište najma. Datumi ispod računaju se unatrag od cilja useljenja postavljenog gore.</p>
+
+    <div class="legend">
+      <span><i style="background:var(--accent-kuca)"></i>K — Kuća</span>
+      <span><i style="background:var(--accent-stan)"></i>S — Stan</span>
+      <span><i style="background:var(--ink-muted)"></i>A — Administracija</span>
+    </div>
+
+    <div class="timeline" id="timeline"></div>
+
+    <div class="note" style="margin-top:22px;">
+      Rok od mjesec dana je izvediv za ovaj opseg radova, ali je najosjetljiviji na <strong>kašnjenje dobave materijala i termine majstora</strong> (ako ipak zatreba netko za plin/dimnjak) te na <strong>brzinu pronalaska najmoprimca</strong>. Oglas za stan objavi već u 1. tjednu — najam rijetko krene istog dana kad je stan spreman.
+    </div>
+  </section>
+
+  <!-- ============ KUĆA ============ -->
+  <section class="panel" id="panel-kuca" role="tabpanel" hidden>
+    <p class="lead">Kuća je useljiva odmah, pa je fokus na provjeri instalacija i sigurnosti, sitnim radovima i pripremi useljenja — bez veće rekonstrukcije.</p>
+    <div id="kuca-groups"></div>
+  </section>
+
+  <!-- ============ STAN ============ -->
+  <section class="panel" id="panel-stan" role="tabpanel" hidden>
+    <p class="lead">Stan ide u najam pa uz manje uređenje treba i pripremu za tržište: fotografije, oglas, ugovor.</p>
+    <div id="stan-groups"></div>
+  </section>
+
+  <!-- ============ ADMINISTRACIJA ============ -->
+  <section class="panel" id="panel-admin" role="tabpanel" hidden>
+    <p class="lead">Papirologija koja vrijedi za oba prostora — adresa, komunalije, prijave. Najlakše je zaboraviti baš ovo, pa je odvojeno od radova.</p>
+    <div id="admin-groups"></div>
+    <div class="note">
+      Rokovi i postupci za prijavu prebivališta, prijavu ugovora o najmu i oporezivanje prihoda od najma povremeno se mijenjaju — <strong>prije nego što nešto od ovoga smatraš gotovim, provjeri trenutne uvjete</strong> na e-Građani / kod nadležne porezne uprave, ili s knjigovođom.
+    </div>
+  </section>
+
+  <!-- ============ DAN D ============ -->
+  <section class="panel" id="panel-selidba" role="tabpanel" hidden>
+    <p class="lead">Logistika same selidbe — od rezervacije kombija do prvog dana u kući.</p>
+    <div id="selidba-groups"></div>
+  </section>
+
+  <!-- ============ PRORAČUN ============ -->
+  <section class="panel" id="panel-budzet" role="tabpanel" hidden>
+    <p class="lead">Grubi popis stavki za koje vrijedi rezervirati novac. Upiši svoje procjene ili stvarne iznose — zbroj se računa sam i sinkronizira.</p>
+    <div id="budget-groups"></div>
+    <div class="total-strip">
+      <div class="tb-label">Ukupno (sve stavke)</div>
+      <div class="amount mono" id="grandTotal">0 €</div>
+    </div>
+  </section>
+
+  <div class="foot-row">
+    <button class="reset-btn" id="resetBtn">Resetiraj sve oznake i iznose</button>
+  </div>
+
+</div>
+
+<!--
+  ============================================================================
+  SINKRONIZACIJA PREKO INTERNETA (Firebase Firestore)
+  ============================================================================
+  Ova stranica radi i bez ičega od ovoga — tada sve pamti lokalno u pregledniku
+  (kao prije). Da bi se stanje (kvačice, iznosi, datum) sinkroniziralo između
+  tvog mobitela, laptopa i svih uređaja preko interneta:
+
+    1. Napravi besplatan Firebase projekt na https://console.firebase.google.com
+    2. Firestore Database → Create database (test/production mode, svejedno
+       jer pravila postavljamo ručno u koraku 4)
+    3. Authentication → Sign-in method → omogući "Anonymous"
+    4. Firestore Database → Rules → zalijepi (zamijeni COLLECTION i DOC
+       vrijednostima koje ćeš upisati i dolje u FIRESTORE_COLLECTION / DOC):
+
+         rules_version = '2';
+         service cloud.firestore {
+           match /databases/{database}/documents {
+             match /selidba/plan {
+               allow read, write: if request.auth != null;
+             }
+           }
+         }
+
+    5. Project settings → General → Your apps → Add app (Web) → kopiraj
+       firebaseConfig objekt i zalijepi ga umjesto PASTE_ vrijednosti ispod.
+    6. Stranicu objavi na bilo kojem hostingu (Netlify drag&drop, GitHub
+       Pages, Cloudflare Pages, Firebase Hosting…) — potpuno je samostalna,
+       jedna HTML datoteka.
+
+  Detaljne upute korak-po-korak: upute-firebase-hosting.md (dostavljeno uz
+  ovu datoteku).
+  ============================================================================
+-->
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ========================================================================
+     POPUNI OVO da uključiš sinkronizaciju preko interneta.
+     Dok je apiKey na "PASTE_API_KEY", stranica radi lokalno (bez oblaka) —
+     ništa se ne kvari ako ovo ostaviš prazno.
+     Upute: upute-firebase-hosting.md
+  ======================================================================== */
+  var firebaseConfig = {
+    apiKey: "AIzaSyCyZ6xlz19KwZb51-c8sQ6jN_og7M-omd4",
+    authDomain: "selidba.firebaseapp.com",
+    projectId: "selidba",
+    storageBucket: "selidba.firebasestorage.app",
+    messagingSenderId: "747128197349",
+    appId: "1:747128197349:web:ca169143d0aad532d9040c"
+  };
+  var FIRESTORE_COLLECTION = "selidba";
+  var FIRESTORE_DOC = "plan";
+  /* ======================================================================== */
+
+  var LOCAL_KEY = "selidba-plan-v1";
+  var store = {};
+  var allTaskIds = [];
+  var useCloud = false;
+  var docRef = null;
+  var writeTimer = null;
+
+  function loadLocal(){
+    try{ var raw = localStorage.getItem(LOCAL_KEY); return raw ? JSON.parse(raw) : {}; }
+    catch(e){ return {}; }
+  }
+  function saveLocal(s){
+    try{ localStorage.setItem(LOCAL_KEY, JSON.stringify(s)); }catch(e){}
+  }
+
+  var statusEl = null;
+  function setStatus(text, cls){
+    if(!statusEl) statusEl = document.getElementById("syncStatus");
+    if(!statusEl) return;
+    statusEl.textContent = text;
+    statusEl.className = "sync-status " + (cls || "");
+  }
+
+  function commit(){
+    if(useCloud && docRef){
+      clearTimeout(writeTimer);
+      writeTimer = setTimeout(function(){
+        docRef.set(store).then(function(){
+          setStatus("Sinkronizirano ✓", "ok");
+        }).catch(function(err){
+          console.error(err);
+          setStatus("Greška spremanja — provjeri vezu", "err");
+        });
+      }, 300);
+    } else {
+      saveLocal(store);
+    }
+  }
+
+  // ---------------- data ----------------
+  var KUCA = [
+    { title:"Instalacije i sigurnost", cls:"g-kuca", items:[
+      ["kuca-1","Provjeriti električne instalacije i stanje brojila"],
+      ["kuca-2","Provjeriti vodovodne instalacije, slavine i odvode"],
+      ["kuca-3","Provjeriti / servisirati grijanje (kotao, peć, dimnjak)"],
+      ["kuca-4","Provjeriti ispravnost plinskih instalacija (ako postoje)"],
+      ["kuca-5","Provjeriti brtve na prozorima i vratima"],
+      ["kuca-6","Razmotriti zamjenu brava zbog sigurnosti"],
+      ["kuca-7","Postaviti / provjeriti dimne senzore i aparat za gašenje požara"],
+      ["kuca-8","Provjeriti krov, oluke i odvodnju oborinskih voda"],
+      ["kuca-9","Riješiti / ažurirati osiguranje kuće"]
+    ]},
+    { title:"Radovi i čišćenje", cls:"g-kuca", items:[
+      ["kuca-10","Napraviti popis svih manjih popravaka po prostorijama"],
+      ["kuca-11","Kupiti materijal (boja, silikon, sitni okov)"],
+      ["kuca-12","Bojanje zidova gdje je potrebno"],
+      ["kuca-13","Sitni popravci (kvake, ladice, ormari, rasvjeta)"],
+      ["kuca-14","Silikoniranje kupaonice i kuhinje"],
+      ["kuca-15","Dubinsko čišćenje svih prostorija"],
+      ["kuca-16","Dezinsekcija / deratizacija, ako je kuća stajala prazna"],
+      ["kuca-17","Čišćenje dvorišta, garaže i vanjskih površina (ako postoje)"]
+    ]},
+    { title:"Priprema za useljenje", cls:"g-kuca", items:[
+      ["kuca-18","Napraviti plan rasporeda namještaja po prostorijama"],
+      ["kuca-19","Dogovoriti datum i način prijevoza (kombi / prijevoznik)"],
+      ["kuca-20","Preuzeti sve ključeve i daljinske (kapija, garaža)"],
+      ["kuca-21","Spojiti i provjeriti bijelu tehniku nakon useljenja"],
+      ["kuca-22","Provjeriti poštanski sandučić i oznaku imena"]
+    ]}
+  ];
+
+  var STAN = [
+    { title:"Odluke prije radova", cls:"g-stan", items:[
+      ["stan-1","Odlučiti: namješten ili prazan najam"],
+      ["stan-2","Istražiti tržišne cijene najma u kvartu (Njuškalo, Oglasnik, FB grupe)"],
+      ["stan-3","Odlučiti opseg radova (samo kozmetika vs. veći zahvat)"],
+      ["stan-4","Provjeriti valjanost energetskog certifikata / naručiti novi ako treba"]
+    ]},
+    { title:"Soba do ceste", cls:"g-stan", items:[
+      ["sc-1","Oprati vrata i skinuti naljepnice", true],
+      ["sc-2","Okretati"],
+      ["sc-3","Pogledati gdje je otpala žbuka", true],
+      ["sc-4","Lakiranje prozora"],
+      ["sc-5","Oprati rolete"],
+      ["sc-6","Oprati ormare"],
+      ["sc-7","Obojati prozor dolje bijelo (2x)", true],
+      ["sc-8","Poklopac za žicu što viri", true],
+      ["sc-9","Donijeti Lovrin krevet"],
+      ["sc-10","Oprati madrac"],
+      ["sc-11","Lakiranje kreveta"],
+      ["sc-12","Oprati Lovrin krevet"],
+      ["sc-13","Odnijeti ovaj krevet u spavaću sobu", false, "+ noćni ormarići"],
+      ["sc-14","Oprati stol i stolicu", false, "→ premjestiti u spavaću sobu"],
+      ["sc-15","Skinuti karnišu s prozora", true],
+      ["sc-16","Glazbena oprema (?)"],
+      ["sc-17","Stvari iz ormara (?)"],
+      ["sc-18","Radni stol ostaje u ovoj sobi"],
+      ["sc-19","Osmirglati klupicu prozora", true],
+      ["sc-20","Oprati prozore"],
+      ["sc-21","Skinuti sa zidova", true],
+      ["sc-22","Oprati mehanizam / traku roleta"],
+      ["sc-23","Popraviti prozore"]
+    ]},
+    { title:"Spavaća soba", cls:"g-stan", items:[
+      ["ss-1","Oprati vrata i skinuti naljepnice", true],
+      ["ss-2","Okretati (?)"],
+      ["ss-3","Donijeti krevet i noćne ormariće"],
+      ["ss-4","Oprati krevet, noćne ormariće i madrac"],
+      ["ss-5","Poskidati slike i čavle", true],
+      ["ss-6","Donijeti Lovrin krevet"],
+      ["ss-7","Oprati roletu"],
+      ["ss-8","Odnijeti moj stari krevet"],
+      ["ss-9","Oprati ormare"],
+      ["ss-10","Oprati komodu", false, "→ odnijeti u dnevnu, za glazbenu opremu"],
+      ["ss-11","Lakiranje prozora"],
+      ["ss-12","Osmirglati klupicu prozora", true],
+      ["ss-13","Oprati prozor"],
+      ["ss-14","Rupa iza radijatora i zidovi — gletanje", true],
+      ["ss-15","Oprati mehanizam / traku roleta"]
+    ]},
+    { title:"Balkon", cls:"g-stan", items:[
+      ["bal-1","Ograda — oprati", true],
+      ["bal-2","Ograda — obojati", true],
+      ["bal-3","Ograda — skinuti traku", true],
+      ["bal-4","Osmirglati klupicu prozora", true],
+      ["bal-5","Očistiti oko prozora"],
+      ["bal-6","Oprati kutije od roleta"],
+      ["bal-7","Ostrugati nečistoću s rubova"],
+      ["bal-8","Oprati pod"],
+      ["bal-9","Poprskati crne mrlje na zidu varikinom"]
+    ]},
+    { title:"Predsoblje / hodnik", cls:"g-stan", items:[
+      ["hod-1","Oprati vrata (sobna i ulazna)"],
+      ["hod-2","Okretati (?)"],
+      ["hod-3","Vješalica za jakne — obojati", true],
+      ["hod-4","Oprati cijevi"],
+      ["hod-5","Oprati brojila"],
+      ["hod-6","Prekidač za kupaonicu", true],
+      ["hod-7","Oprati staklo"],
+      ["hod-8","Zagletati (izravnati) zidove", true],
+      ["hod-9","Noga za vrata", true]
+    ]},
+    { title:"Kuhinja / blagovaonica / dnevna", cls:"g-stan", items:[
+      ["kuh-1","Okretati (?)"],
+      ["kuh-2","Lakiranje prozora", true],
+      ["kuh-3","Osmirglati klupicu prozora", true],
+      ["kuh-4","Oprati rolete"],
+      ["kuh-5","Poskidati slike i čavle", true],
+      ["kuh-6","Oprati prozore"],
+      ["kuh-7","Oprati stol i stolice"],
+      ["kuh-8","Oprati kuhinjske elemente"],
+      ["kuh-9","Oprati štednjak (cijeli)"],
+      ["kuh-10","Oprati pločice"],
+      ["kuh-11","Oprati sudoper"],
+      ["kuh-12","Oprati napu"],
+      ["kuh-13","Zagletati rupe kod karniše i zidova", true],
+      ["kuh-14","Kupiti stolić za internet (~30 cm)", true],
+      ["kuh-15","Poskidati karniše s prozora", true],
+      ["kuh-16","Oprati cijevi"],
+      ["kuh-17","Zamijeniti pločice"],
+      ["kuh-18","Stranica kauča — zašarafiti", true],
+      ["kuh-19","Vodilica za internet kabel", true],
+      ["kuh-20","Oprati frižider i mikrovalnu"],
+      ["kuh-21","Riješiti ponudu (?)"],
+      ["kuh-22","Popraviti prozore"],
+      ["kuh-23","Oprati mehanizam / traku roleta"]
+    ]},
+    { title:"Oglašavanje i najam", cls:"g-stan", items:[
+      ["stan-11","Fotografirati stan u dnevnom svjetlu, uredan"],
+      ["stan-12","Napisati tekst oglasa (lokacija, kvadratura, uvjeti, cijena)"],
+      ["stan-13","Objaviti oglas (Njuškalo, Oglasnik, Facebook Marketplace / grupe)"],
+      ["stan-14","Definirati uvjete najma (kaucija, komunalije, trajanje, kućni ljubimci)"],
+      ["stan-15","Provjeriti i probrati zainteresirane najmoprimce"],
+      ["stan-16","Dogovoriti termine razgledavanja stana"]
+    ]},
+    { title:"Pravno i administrativno", cls:"g-stan", items:[
+      ["stan-17","Pripremiti predložak ugovora o najmu"],
+      ["stan-18","Napraviti popis inventara i zapisnik o stanju brojila"],
+      ["stan-19","Potpisati ugovor i preuzeti kauciju"],
+      ["stan-20","Prijaviti ugovor o najmu nadležnoj poreznoj upravi"],
+      ["stan-21","Razmotriti osiguranje za iznajmljivače"]
+    ]}
+  ];
+
+  var ADMIN = [
+    { title:"Adresa i osobni dokumenti", cls:"g-neutral", items:[
+      ["admin-1","Prijaviti novo prebivalište / boravište (MUP, e-Građani)"],
+      ["admin-2","Ažurirati adresu na osobnoj iskaznici, ako je potrebno"],
+      ["admin-3","Obavijestiti fakultet (FGAG Mostar) o promjeni adrese"],
+      ["admin-4","Obavijestiti poslodavca o promjeni adrese, ako je primjenjivo"]
+    ]},
+    { title:"Komunalije i pretplate", cls:"g-neutral", items:[
+      ["admin-5","Prepisati / prijaviti struju na novu adresu"],
+      ["admin-6","Prepisati / prijaviti vodu na novu adresu"],
+      ["admin-7","Prepisati / prijaviti plin, ako se koristi"],
+      ["admin-8","Preseliti ili ugovoriti internet i TV pretplatu"],
+      ["admin-9","Riješiti komunalije za stan koji ide u najam"],
+      ["admin-10","Postaviti preusmjeravanje pošte, ako je dostupno"]
+    ]},
+    { title:"Financije i ostalo", cls:"g-neutral", items:[
+      ["admin-11","Ažurirati adresu kod banke i osiguranja"],
+      ["admin-12","Provjeriti prometnu dozvolu vozila (promjena adrese)"],
+      ["admin-13","Provjeriti obavezu prijave prihoda od najma"]
+    ]}
+  ];
+
+  var SELIDBA = [
+    { title:"Priprema unaprijed", cls:"g-urgent", items:[
+      ["sel-1","Rezervirati kombi / prijevoznika (rano, zbog kratkog roka)"],
+      ["sel-2","Nabaviti kutije, traku i foliju za zaštitu namještaja"],
+      ["sel-3","Organizirati pomoć (obitelj, prijatelji, majstori za nošenje)"],
+      ["sel-4","Dogovoriti parking / pristup za kombi na obje lokacije"]
+    ]},
+    { title:"Pakiranje", cls:"g-urgent", items:[
+      ["sel-5","Sustav označavanja kutija po prostorijama (boja / broj)"],
+      ["sel-6","Popisati vrijedne i lomljive stvari za poseban prijevoz"],
+      ["sel-7","Prve zapakirati sezonske i rjeđe korištene stvari"],
+      ["sel-8","Pripremiti \"kutiju prve nužde\" (dokumenti, punjači, higijena, alat)"]
+    ]},
+    { title:"Na dan selidbe", cls:"g-urgent", items:[
+      ["sel-9","Očitati brojila (struja, voda, plin) u starom i novom prostoru"],
+      ["sel-10","Finalna provjera praznog stana / soba"],
+      ["sel-11","Predati / preuzeti ključeve"],
+      ["sel-12","Provjeriti rad instalacija u kući odmah po dolasku"],
+      ["sel-13","Rasporediti namještaj prema planu iz sekcije Kuća"]
+    ]}
+  ];
+
+  var BUDGET = [
+    { title:"Kuća — materijal i radovi", items:[
+      ["b-k1","Boja i pribor za bojanje"],
+      ["b-k2","Silikon i brtvila"],
+      ["b-k3","Sitni popravci (brave, slavine, okov)"],
+      ["b-k4","Dimni senzor / aparat za gašenje"],
+      ["b-k5","Čišćenje / dezinsekcija"],
+      ["b-k6","Servis grijanja"],
+      ["b-k7","Osiguranje kuće"]
+    ]},
+    { title:"Stan — materijal i radovi", items:[
+      ["b-s1","Boja i pribor za bojanje"],
+      ["b-s2","Sitni popravci"],
+      ["b-s3","Profesionalno čišćenje"],
+      ["b-s4","Energetski certifikat"],
+      ["b-s5","Fotografiranje / oglas (ako plaćeno)"]
+    ]},
+    { title:"Selidba", items:[
+      ["b-m1","Najam kombija / prijevoznik"],
+      ["b-m2","Kutije i pakirni materijal"],
+      ["b-m3","Pomoć pri nošenju (ako plaćena)"]
+    ]}
+  ];
+
+  // ---------------- render checklists ----------------
+  function renderChecklistGroups(containerId, groups){
+    var container = document.getElementById(containerId);
+    container.innerHTML = "";
+    groups.forEach(function(group){
+      var wrap = document.createElement("div");
+      wrap.className = "group " + group.cls;
+
+      var head = document.createElement("div");
+      head.className = "group-head";
+      head.innerHTML =
+        '<div class="group-title">' + group.title + '</div>' +
+        '<div class="group-progress"><div class="bar"><span></span></div><div class="bar-num mono">0/0</div></div>';
+      wrap.appendChild(head);
+
+      var list = document.createElement("div");
+      list.className = "checklist";
+
+      group.items.forEach(function(pair){
+        var id = pair[0], text = pair[1], doneDefault = pair[2] || false, note = pair[3] || "";
+        allTaskIds.push(id);
+        var row = document.createElement("label");
+        row.className = "item";
+        row.setAttribute("for", id);
+        var checked = (id in store) ? !!store[id] : doneDefault;
+        if(!(id in store)) store[id] = checked;
+        if(checked) row.classList.add("checked");
+        row.innerHTML =
+          '<input type="checkbox" id="' + id + '"' + (checked ? " checked" : "") + ' />' +
+          '<span class="item-text">' + text + (note ? '<span class="item-note">' + note + '</span>' : '') + '</span>';
+        list.appendChild(row);
+      });
+
+      wrap.appendChild(list);
+      container.appendChild(wrap);
+
+      var checkboxes = list.querySelectorAll('input[type="checkbox"]');
+      var fill = head.querySelector(".bar > span");
+      var num = head.querySelector(".bar-num");
+
+      function updateGroup(){
+        var total = checkboxes.length, done = 0;
+        checkboxes.forEach(function(cb){ if(cb.checked) done++; });
+        fill.style.width = (total ? (done/total*100) : 0) + "%";
+        num.textContent = done + "/" + total;
+      }
+      checkboxes.forEach(function(cb){
+        cb.addEventListener("change", function(){
+          store[cb.id] = cb.checked;
+          commit();
+          cb.closest(".item").classList.toggle("checked", cb.checked);
+          updateGroup();
+          updateOverall();
+        });
+      });
+      updateGroup();
+    });
+  }
+
+  function renderAllChecklists(){
+    allTaskIds = [];
+    renderChecklistGroups("kuca-groups", KUCA);
+    renderChecklistGroups("stan-groups", STAN);
+    renderChecklistGroups("admin-groups", ADMIN);
+    renderChecklistGroups("selidba-groups", SELIDBA);
+  }
+
+  function updateOverall(){
+    var done = 0;
+    allTaskIds.forEach(function(id){ if(store[id]) done++; });
+    var pct = allTaskIds.length ? Math.round(done/allTaskIds.length*100) : 0;
+    document.getElementById("overallFill").style.width = pct + "%";
+    document.getElementById("overallNum").textContent = pct + "%";
+  }
+
+  // ---------------- budget ----------------
+  function fmtEUR(n){
+    return n.toLocaleString('hr-HR', {minimumFractionDigits:0, maximumFractionDigits:2}) + " €";
+  }
+
+  function renderBudget(){
+    var container = document.getElementById("budget-groups");
+    container.innerHTML = "";
+    var groupTotalsEls = [];
+
+    BUDGET.forEach(function(group){
+      var wrap = document.createElement("div");
+      wrap.className = "budget-group";
+      wrap.innerHTML = '<div class="group-head"><div class="group-title">' + group.title + '</div><div class="mono" data-role="group-total">0 €</div></div>';
+
+      var scroller = document.createElement("div");
+      scroller.className = "overflow-x";
+      var table = document.createElement("table");
+      table.className = "budget-table";
+      table.innerHTML =
+        '<thead><tr><th>Stavka</th><th style="text-align:right">Iznos</th></tr></thead>' +
+        '<tbody></tbody>';
+      var tbody = table.querySelector("tbody");
+
+      group.items.forEach(function(pair){
+        var id = pair[0], text = pair[1];
+        var tr = document.createElement("tr");
+        var checked = !!store[id + "-done"];
+        var amount = store[id + "-amt"] || "";
+        tr.innerHTML =
+          '<td><input type="checkbox" id="' + id + '"' + (checked ? " checked" : "") + ' /><label for="' + id + '">' + text + '</label></td>' +
+          '<td style="text-align:right"><input type="number" min="0" step="1" inputmode="decimal" id="' + id + '-amt" value="' + amount + '" placeholder="0" /><span class="eur">€</span></td>';
+        tbody.appendChild(tr);
+      });
+
+      scroller.appendChild(table);
+      wrap.appendChild(scroller);
+      container.appendChild(wrap);
+
+      var groupTotalEl = wrap.querySelector('[data-role="group-total"]');
+      groupTotalsEls.push({ el: groupTotalEl, ids: group.items.map(function(p){return p[0];}) });
+
+      group.items.forEach(function(pair){
+        var id = pair[0];
+        var cb = document.getElementById(id);
+        var amt = document.getElementById(id + "-amt");
+        cb.addEventListener("change", function(){
+          store[id + "-done"] = cb.checked;
+          commit();
+        });
+        amt.addEventListener("input", function(){
+          store[id + "-amt"] = amt.value;
+          commit();
+          recomputeTotals();
+        });
+      });
+    });
+
+    function recomputeTotals(){
+      var grand = 0;
+      groupTotalsEls.forEach(function(g){
+        var sum = 0;
+        g.ids.forEach(function(id){
+          var v = parseFloat(store[id + "-amt"]);
+          if(!isNaN(v)) sum += v;
+        });
+        g.el.textContent = fmtEUR(sum);
+        grand += sum;
+      });
+      document.getElementById("grandTotal").textContent = fmtEUR(grand);
+    }
+    recomputeTotals();
+  }
+
+  // ---------------- timeline ----------------
+  var WEEKS = [
+    { label:"Tjedan 1", k:["Provjera instalacija i popis radova","Kupnja materijala"], s:["Odluka o opsegu radova","Istraživanje cijena najma","Naručivanje energ. certifikata"], a:["Rezervacija kombija (rok je kratak)"] },
+    { label:"Tjedan 2", k:["Sitni popravci","Bojanje zidova","Generalno čišćenje"], s:["Bojanje i popravci","Uklanjanje osobnih stvari"], a:["Fotografiranje oba prostora za dokumentaciju"] },
+    { label:"Tjedan 3", k:["Završni radovi i detalji","Priprema rasporeda namještaja"], s:["Fotografije za oglas","Objava oglasa i razgledavanja"], a:["Prijava / odjava adrese","Prijenos komunalija","Pakiranje"] },
+    { label:"Tjedan 4", k:["Selidba i useljenje","Spajanje bijele tehnike"], s:["Primopredaja / potpis ugovora","Konačno čišćenje"], a:["Prijava ugovora o najmu"] }
+  ];
+
+  function fmtDate(d){
+    return d.toLocaleDateString('hr-HR', {day:'2-digit', month:'2-digit'});
+  }
+
+  function renderTimeline(targetDate){
+    var el = document.getElementById("timeline");
+    el.innerHTML = "";
+    for(var i=0;i<4;i++){
+      var end = new Date(targetDate);
+      end.setDate(end.getDate() - (3-i)*7);
+      var start = new Date(end);
+      start.setDate(start.getDate() - 6);
+
+      var w = WEEKS[i];
+      var card = document.createElement("div");
+      card.className = "tcard";
+      var lis = "";
+      w.k.forEach(function(t){ lis += '<li class="k">' + t + '</li>'; });
+      w.s.forEach(function(t){ lis += '<li class="s">' + t + '</li>'; });
+      w.a.forEach(function(t){ lis += '<li class="a">' + t + '</li>'; });
+      card.innerHTML =
+        '<div class="tcard-head"><div class="tcard-week">' + w.label + '</div><div class="tcard-dates mono">' + fmtDate(start) + ' – ' + fmtDate(end) + '</div></div>' +
+        '<ul>' + lis + '</ul>';
+      el.appendChild(card);
+    }
+  }
+
+  function todayPlus(days){
+    var d = new Date();
+    d.setDate(d.getDate() + days);
+    return d;
+  }
+
+  function refreshDateInput(){
+    var dateInput = document.getElementById("targetDate");
+    var savedDate = store["targetDate"];
+    var initialDate = savedDate ? new Date(savedDate) : todayPlus(30);
+    dateInput.value = initialDate.toISOString().slice(0,10);
+    renderTimeline(initialDate);
+  }
+
+  // ---------------- full (re)build — safe to call repeatedly ----------------
+  function buildUI(){
+    renderAllChecklists();
+    updateOverall();
+    renderBudget();
+    refreshDateInput();
+  }
+
+  // ---------------- one-time wiring ----------------
+  function wireStaticUI(){
+    var dateInput = document.getElementById("targetDate");
+    dateInput.addEventListener("change", function(){
+      if(!dateInput.value) return;
+      store["targetDate"] = dateInput.value;
+      commit();
+      renderTimeline(new Date(dateInput.value));
+    });
+
+    var tabs = document.querySelectorAll(".tab");
+    var panels = {
+      pregled: document.getElementById("panel-pregled"),
+      kuca: document.getElementById("panel-kuca"),
+      stan: document.getElementById("panel-stan"),
+      admin: document.getElementById("panel-admin"),
+      selidba: document.getElementById("panel-selidba"),
+      budzet: document.getElementById("panel-budzet")
+    };
+    function selectTab(name){
+      tabs.forEach(function(t){
+        var active = t.getAttribute("data-panel") === name;
+        t.setAttribute("aria-selected", active ? "true" : "false");
+      });
+      Object.keys(panels).forEach(function(key){
+        panels[key].hidden = key !== name;
+      });
+      try{ localStorage.setItem(LOCAL_KEY + "-tab", name); }catch(e){}
+    }
+    tabs.forEach(function(t){
+      t.addEventListener("click", function(){ selectTab(t.getAttribute("data-panel")); });
+    });
+    var savedTab = null;
+    try{ savedTab = localStorage.getItem(LOCAL_KEY + "-tab"); }catch(e){}
+    if(savedTab && panels[savedTab]) selectTab(savedTab);
+
+    var resetBtn = document.getElementById("resetBtn");
+    var confirming = false;
+    resetBtn.addEventListener("click", function(){
+      if(!confirming){
+        confirming = true;
+        resetBtn.textContent = "Sigurno? Klikni ponovno za brisanje";
+        resetBtn.classList.add("confirming");
+        setTimeout(function(){
+          confirming = false;
+          resetBtn.textContent = "Resetiraj sve oznake i iznose";
+          resetBtn.classList.remove("confirming");
+        }, 4000);
+        return;
+      }
+      if(useCloud && docRef){
+        docRef.set({}).catch(function(err){ console.error(err); });
+      } else {
+        store = {};
+        saveLocal(store);
+        buildUI();
+      }
+    });
+  }
+
+  // ---------------- bootstrap ----------------
+  store = loadLocal();
+  wireStaticUI();
+  buildUI();
+  setStatus("Lokalna pohrana (nije spojeno na oblak)", "");
+
+  var configured = firebaseConfig.apiKey && firebaseConfig.apiKey.indexOf("PASTE_") !== 0 && typeof firebase !== "undefined";
+  if(configured){
+    setStatus("Povezivanje na oblak…", "");
+    try{
+      firebase.initializeApp(firebaseConfig);
+      firebase.auth().signInAnonymously().catch(function(err){
+        console.error(err);
+        setStatus("Greška prijave — lokalna pohrana", "err");
+      });
+      firebase.auth().onAuthStateChanged(function(user){
+        if(!user) return;
+        var db = firebase.firestore();
+        docRef = db.collection(FIRESTORE_COLLECTION).doc(FIRESTORE_DOC);
+        docRef.onSnapshot(function(snap){
+          useCloud = true;
+          store = snap.exists ? (snap.data() || {}) : {};
+          setStatus("Sinkronizirano ✓", "ok");
+          buildUI();
+        }, function(err){
+          console.error(err);
+          useCloud = false;
+          setStatus("Bez veze s oblakom — lokalna pohrana", "err");
+        });
+      });
+    }catch(e){
+      console.error(e);
+      setStatus("Greška postavki — lokalna pohrana", "err");
+    }
+  }
+})();
+</script>
+</body>
+</html>
